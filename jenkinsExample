@@ -10,53 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                   
-
-import java.io.ByteArrayInputStream;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.poi.xssf.usermodel.XSSFCell;
-
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeSuite;
-
-import org.testng.annotations.Test;
-
-
-
-import io.qameta.allure.Allure;
-
-import io.qameta.allure.Step;
-
-import io.qameta.allure.model.Status;
-
-
-
-
-
+ 
 
 public class SchoolTest {
 
@@ -361,19 +315,6 @@ public class SchoolTest {
         stage('Test') {
             steps {
                 script {
-                    
-
-
-import java.util.Calendar;
-
-import org.springframework.scheduling.annotation.Scheduled;
-
-
-
-
-import org.springframework.stereotype.Component;
-import org.testng.TestNG;
-
 
 @Component
 public class SchoolClass {
