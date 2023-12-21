@@ -1,22 +1,352 @@
-pipeline {
-    agent any
+package com.example.School;
 
-    stages {
-        stage('Task1') {
-            steps {
-                echo 'Git'
-            }
-        }
+import java.io.ByteArrayInputStream;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.annotations.Test;
+import com.example.School.SchoolActions;
+
+
+import io.qameta.allure.Allure;
+
+import io.qameta.allure.Step;
+
+import io.qameta.allure.model.Status;
+
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.net.URL;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.stereotype.Component;
+
+
+
+
+public class SchoolTest {
+
+
+	
+	private  int passCount = 0;
+    private  int failCount = 0;
+    private static WebDriver driver;
+    private List<String> failureDetailsList = new ArrayList<String>();
+    private List<String> failedRowNumberList = new ArrayList<String>();
+    private List<byte[]> screenshotsList = new ArrayList<byte[]>();
+  
+    
+    
+   
+
+    
+    @BeforeSuite
+    public void runBeforeSuite() throws Exception {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-gpu", "--ignore-certificate-errors");
+        driver = new ChromeDriver(options);
+        driver.manage().window().maximize();
+        driver.manage().deleteAllCookies();
+        driver.get("https://school-stg.mapmyclassess.com/login");
+    }
+    
+   
+    @AfterMethod
+    public void tearDown(ITestResult result) {
         
-         stage('Task2') {
-            steps {
-                echo 'First CheckIn'
+    	
+            driver.quit();
+       
+    } 
+
+   
+  
+    
+
+    @Test(groups = "execute")
+    
+    public void getRowCount() throws Exception {
+        String file = "C:\\Users\\098\\Desktop\\TaskShedular\\School\\Data\\Testing.xlsx";
+        
+        FileInputStream inputStrem = new FileInputStream(file);
+        XSSFWorkbook wb = new XSSFWorkbook(inputStrem);
+        XSSFSheet sheet = wb.getSheet("Sheet1");
+
+
+        for (int currentRow = 1; currentRow <= sheet.getLastRowNum(); currentRow++) {
+            XSSFCell cell = null;
+            String result = "FAIL";
+
+
+           
+
+         // inputs
+            XSSFCell inputs = sheet.getRow(currentRow).getCell(4);
+            String stepsToExecuteStrInp = inputs.getStringCellValue();
+            Map<String, String> myMap = new HashMap<String, String>();
+            String[] pairs = stepsToExecuteStrInp.split(",");
+            for (int p = 0; p < pairs.length; p++) {
+                String pair = pairs[p];
+                String[] keyValue = pair.split("=");
+                myMap.put(keyValue[0], keyValue[1]);
             }
+
+            // steps to Execute
+            XSSFCell str = sheet.getRow(currentRow).getCell(3);
+            String stepsToExecuteStr = str.getStringCellValue();
+            String[] stepsToExecute = stepsToExecuteStr.split(",");
+            for (int j = 0; j < stepsToExecute.length; j++) {
+                String input = stepsToExecute[j];
+                JSONObject ele = readJson(stepsToExecute[j]);
+                String xpath = (String) ele.get("XPath");
+                String action = (String) ele.get("Action");
+
+                
+
+                
+                try {
+              	
+                    if (action.equals("click")) {
+                        SchoolActions.click(driver, xpath);
+                        result = "PASS";
+                        
+                        passCount++;
+                    } else if (action.equals("Field")) {
+                        if (SchoolActions.type(driver, xpath,  myMap.get(input))) {
+                            result = "PASS";
+                            
+                            passCount++;
+                        }
+                    } else if (action.equals("DayField")) {
+                        SchoolActions.Day(driver, xpath, myMap.get(input));
+                        result = "PASS";
+                       
+                        passCount++;
+                    } 
+//                    else if (action.equals("side")) {
+//                        SchoolActions.slider(driver, xpath);
+//                        result = "PASS";
+//                        passCount++;
+//                    } 
+                    else if (action.equals("pointclick")) {
+                        SchoolActions.clickpoint(driver, xpath);
+                        result = "PASS";
+                        passCount++;
+                    } else if (action.equals("scroll")) {
+                        SchoolActions.scrollToElement(driver, xpath);
+                        result = "PASS";
+                        passCount++;
+                    } else if (action.equals("zoomLevel")) {
+                        SchoolActions.zoomLevel(driver);
+                        result = "PASS";
+                        passCount++;
+                    } else if (action.equals("element")) {
+                        SchoolActions.eleclickable(driver, xpath);
+                        result = "PASS";
+                       
+                        passCount++;
+                    } else if (action.equals("visibility")) {
+                        SchoolActions.visclickable(driver, xpath);
+                        result = "PASS";
+                        passCount++;
+                    } else if (action.equals("rightclick")) {
+                        SchoolActions.right(driver, xpath);
+                        result = "PASS";
+                       
+                        passCount++;
+                    } else if (action.equals("multipul")) {
+                        SchoolActions.tab(driver);
+                        result = "PASS";
+                        passCount++;
+                    } else if (action.equals("back")) {
+                        SchoolActions.next(driver);
+                        result = "PASS";
+                        passCount++;
+                    } else if (action.equals("File")) {
+                    	
+                    	
+                        if (SchoolActions.file(driver, xpath,  myMap.get(input))) {
+                            result = "PASS";
+                            
+                            passCount++;
+                        }
+                        
+                    }else if (action.equals("Enter")) {
+                        SchoolActions.textEnter(driver, xpath, myMap.get(input));
+                        result = "PASS";
+                      
+                        passCount++;
+                    } else {
+                        SchoolActions.doubleclick(driver, xpath);
+                        result = "PASS";
+                        passCount++;
+                    }
+
+                    cell = sheet.getRow(currentRow).createCell(6);
+                    cell.setCellValue(result);
+
+                     
+                   
+                    
+                      
+                } catch (Exception e) {
+                	
+                	 result = "FAIL";
+                	    failCount++;
+
+                	    SchoolActions.screenShot(driver, xpath);
+
+                	    String failureDetails = "Failure Details: Result: " + result + ", XPath: " + xpath + ", Screenshot: FailingStep";
+
+                	    // Capture screenshot
+                	    captureScreenshot(driver, "FailingStep", failureDetails);
+                	    byte[] screenshotBytes = takeScreenshotAsByteArray(driver);
+
+                	    // Add combined failure details and screenshot to lists
+                	    failureDetailsList.add(failureDetails);
+                	    screenshotsList.add(screenshotBytes);
+
+                	    // Add attachment in Allure reporting
+                	    String combinedDetailsAndScreenshot = failureDetails + "\n\nScreenshot: " + Arrays.toString(screenshotBytes);
+                	    Allure.addAttachment("Failed Row Number", "Row Number: " + (currentRow + 1) + ", Element: " + input);
+                     
+                	    
+                    
+                   
+                    
+                    cell = sheet.getRow(currentRow).createCell(6);
+                    cell.setCellType(cell.getCellType());
+                    cell.setCellValue(result);
+                    cell = sheet.getRow(currentRow).createCell(7);
+                    cell.setCellType(cell.getCellType());
+                    cell.setCellValue(" " + e);
+                    driver.get("https://school-stg.mapmyclassess.com/events");
+                    Thread.sleep(2000);
+                    e.printStackTrace();
+                    
+                    // Break or continue as needed
+                    String breaks = null;
+                    
+                    if (action != breaks) {
+                        break;
+                    }
+            }	
+          }
+            
+            FileOutputStream output = new FileOutputStream(file);
+            wb.write(output);
+            output.close();
+           
+        } 
+       
+    
+   
+    }  
+
+    @Test(groups = "execute")
+    
+    public void verifyPassCount() {
+
+        Allure.step("Total Passed Elements: " + passCount, Status.PASSED);
+    }
+    
+    @Test(groups = "execute")
+    
+    public void verifyFailCount() {
+        Allure.step("Total Failed Elements: " + failCount, Status.FAILED);
+
+        for (String failedRowNumber : failedRowNumberList) {
+            
+            System.out.println("Failed Row Number: " + failedRowNumber);
         }
-         stage('Task3') {
-            steps {
-                echo 'First CheckOut'
-            }
+
+        for (int i = 0; i < failureDetailsList.size(); i++) {
+            String failureDetails = failureDetailsList.get(i);
+            byte[] screenshot = screenshotsList.get(i);
+
+            String combinedDetailsAndScreenshot = failureDetails + "\n\nScreenshot: ";
+
+            Allure.addAttachment("Failure Details", combinedDetailsAndScreenshot, "text/plain", "txt");
+
+        }
+
+        Assert.assertTrue(failCount == 0, "Some elements have failed.");
+    }
+
+
+ 
+
+
+  
+    @Step("Read JSON file for element: {element}")
+    public static JSONObject readJson(String element) throws IOException, ParseException {
+        JSONParser jsonparser = new JSONParser();
+        FileReader reader = new FileReader("C:\\Users\\098\\Desktop\\TaskShedular\\School\\Json\\Schooljson.json");
+        Object obj = jsonparser.parse(reader);
+        JSONObject config_obj = (JSONObject) obj;
+        JSONObject ele = (JSONObject) config_obj.get(element);
+        String xpath = (String) ele.get("XPath");
+        String actions = (String) ele.get("Action");
+        return ele;
+    }
+
+ 
+    private static byte[] takeScreenshotAsByteArray(WebDriver driver) {
+        try {
+            TakesScreenshot screenshotDriver = (TakesScreenshot) driver;
+            return screenshotDriver.getScreenshotAs(OutputType.BYTES);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    
+    private static void captureScreenshot(WebDriver driver, String stepName, String failureDetails) {
+        try {
+            TakesScreenshot screenshotDriver = (TakesScreenshot) driver;
+            byte[] screenshot = screenshotDriver.getScreenshotAs(OutputType.BYTES);
+            attachScreenshotToAllure(screenshot, stepName, failureDetails);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+    private static void attachScreenshotToAllure(byte[] screenshot, String stepName, String failureDetails) {
+        String attachmentName = "Screenshot: " + failureDetails + " - " + stepName;
+        Allure.addAttachment(attachmentName, new ByteArrayInputStream(screenshot));
+    }
+	
 }
+	
