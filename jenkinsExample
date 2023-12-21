@@ -10,12 +10,12 @@ pipeline {
         
          stage('Task2') {
             steps {
-                echo 'CheckIn'
+                echo 'First CheckIn'
             }
         }
          stage('Task3') {
             steps {
-                echo 'CheckOut'
+                echo 'First CheckOut'
             }
         }
     }
