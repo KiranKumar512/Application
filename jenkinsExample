@@ -10,7 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    package com.example.School;
+                   
 
 import java.io.ByteArrayInputStream;
 
@@ -361,7 +361,7 @@ public class SchoolTest {
         stage('Test') {
             steps {
                 script {
-                    package com.example.School;
+                    
 
 
 import java.util.Calendar;
