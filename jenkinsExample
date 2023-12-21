@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Task1') {
+            steps {
+                echo 'Git'
+            }
+        }
+        
+         stage('Task2') {
+            steps {
+                echo 'CheckIn'
+            }
+        }
+         stage('Task3') {
+            steps {
+                echo 'CheckOut'
+            }
+        }
+    }
+}
